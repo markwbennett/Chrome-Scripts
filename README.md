@@ -10,7 +10,6 @@ A collection of useful Chrome extensions for productivity, accessibility, and wo
 - **[Vivaldi Tab Organizer](scripts/vivaldi-tab-organizer/)** - Specialized tab organization for Vivaldi browser
 
 ### ⚡ Productivity
-- **[Westlaw Extension](scripts/westlaw-extension/)** - Enhanced Westlaw experience with typography controls and navigation shortcuts
 - **[HC Clerk Extension](scripts/hc-clerk-extension/)** - Auto-login for Harris County District Clerk website
 - **[Windows in Tabs](scripts/windows-in-tabs/)** - Opens popup windows as tabs instead
 
@@ -40,11 +39,7 @@ A collection of useful Chrome extensions for productivity, accessibility, and wo
 - Detailed breakdown of domain groups
 - Vivaldi-optimized interface
 
-### Westlaw Extension
-- Customizable typography and layout controls
-- Navigation shortcuts and keyboard commands
-- Enhanced reading experience
-- Notes viewer functionality
+
 
 ## Development
 
