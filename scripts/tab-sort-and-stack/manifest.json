@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Sort and Stack by Domain",
+  "version": "1.0",
+  "description": "Organizes all tabs into stacks grouped by domain name",
+  "permissions": [
+    "tabs",
+    "tabGroups"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Sort Tabs by Domain"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

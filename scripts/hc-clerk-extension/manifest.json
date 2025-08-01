@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "HC District Clerk Auto Login",
+  "version": "1.0",
+  "description": "Automatically fills login credentials for Harris County District Clerk website",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.hcdistrictclerk.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.hcdistrictclerk.com/Edocs/Public/search.aspx"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "HC District Clerk Login"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+} 

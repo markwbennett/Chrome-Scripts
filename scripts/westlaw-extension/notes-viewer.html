@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Westlaw Notes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #007bff;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #000;
+            font-size: 28px;
+        }
+        
+        .header .date {
+            color: #000;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .controls {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .notes-content {
+            min-height: 300px;
+            border: 1px solid #ddd;
+            padding: 0;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+            line-height: 1.2;
+            white-space: pre-wrap;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .notes-content[contenteditable="true"] {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        .entry {
+            margin-bottom: 2px;
+            padding: 0;
+            border-left: none;
+            background: white;
+        }
+        
+        .entry-meta {
+            font-size: 11px;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            display: block;
+            line-height: 1;
+        }
+        
+        .entry-meta a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .entry-meta a:hover {
+            text-decoration: underline;
+        }
+        
+        .entry-citation {
+            font-weight: bold;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            display: block;
+            line-height: 1;
+        }
+        
+        .entry-quote {
+            font-style: normal;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            line-height: 1.2;
+            display: block;
+            white-space: pre-wrap;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 4px 0;
+            padding: 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+        
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .status.success {
+            background: #28a745;
+        }
+        
+        .status.error {
+            background: #dc3545;
+        }
+        
+        .status.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Westlaw Research Notes</h1>
+            <div class="date" id="currentDate"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" id="editBtn">Edit Notes</button>
+            <button class="btn btn-success" id="saveBtn" style="display: none;">Save Changes</button>
+            <button class="btn" id="pasteBtn">📋 Paste from Clipboard</button>
+            <button class="btn" id="exportBtn">Export as Text</button>
+            <button class="btn" id="clearBtn">Clear All Notes</button>
+        </div>
+        
+        <div id="notesContainer">
+            <div class="empty-state" id="emptyState">
+                No notes saved yet. Start by copying quotations from Westlaw documents using the extension.
+            </div>
+            <div class="notes-content" id="notesContent" contenteditable="false"></div>
+        </div>
+    </div>
+    
+    <div class="status" id="status"></div>
+    
+    <script src="notes-viewer.js"></script>
+</body>
+</html> 

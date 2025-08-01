@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Vivaldi Tab Organizer",
+  "version": "1.0",
+  "description": "Organizes tabs by domain for Vivaldi browser (manual stacking required)",
+  "permissions": [
+    "tabs"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Organize Tabs for Vivaldi"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

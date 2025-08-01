@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 300px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            font-size: 14px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #0055a5;
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .save-btn {
+            background-color: #0055a5;
+            color: white;
+        }
+        
+        .save-btn:hover {
+            background-color: #004494;
+        }
+        
+        .clear-btn {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .clear-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 8px;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">HC District Clerk Login</div>
+    
+    <div class="info">
+        Enter your Harris County District Clerk credentials. These will be stored locally and securely on your device.
+    </div>
+    
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter username">
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter password">
+    </div>
+    
+    <div class="button-group">
+        <button class="save-btn" id="saveBtn">Save</button>
+        <button class="clear-btn" id="clearBtn">Clear</button>
+    </div>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    
+    <script src="popup.js"></script>
+</body>
+</html> 

@@ -1,0 +1,23 @@
+{
+    "manifest_version": 3,
+    "name": "Document Viewer Tab Opener",
+    "version": "1.0",
+    "description": "Opens Harris County District Clerk documents in new tabs instead of popup windows",
+    
+    "content_scripts": [
+      {
+        "matches": ["*://www.hcdistrictclerk.com/*"],
+        "js": ["content.js"],
+        "run_at": "document_start"
+      }
+    ],
+    
+    "permissions": [
+      "activeTab"
+    ],
+    
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "Document Viewer Tab Opener"
+    }
+  }

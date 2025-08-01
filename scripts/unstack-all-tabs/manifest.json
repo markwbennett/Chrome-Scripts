@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Unstack All Tabs",
+  "version": "1.0",
+  "description": "Removes all tabs from their stacks/groups",
+  "permissions": [
+    "tabs",
+    "tabGroups"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Unstack All Tabs"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

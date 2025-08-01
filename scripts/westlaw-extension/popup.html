@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 320px;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .version {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .section {
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 13px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .btn:active {
+            background: #dee2e6;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            border-color: #0056b3;
+        }
+        
+        .status {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        .toggle-btn {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-section {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 12px;
+        }
+        
+        .warning-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        
+        .warning-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .warning-text h3 {
+            margin: 0 0 8px 0;
+            color: #856404;
+            font-size: 14px;
+        }
+        
+        .warning-text p {
+            margin: 0;
+            color: #856404;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .killswitch-btn {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .killswitch-btn:hover {
+            background: #c82333;
+            border-color: #bd2130;
+        }
+        
+        .killswitch-btn.enabled {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .killswitch-btn.enabled:hover {
+            background: #218838;
+            border-color: #1e7e34;
+        }
+        
+        .btn.active {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .btn.active:hover {
+            background: #218838;
+            border-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Westlaw Enhancements</h1>
+        <div class="version" id="version">v?.?</div>
+    </div>
+
+    <div id="westlaw-warning" style="display: none;">
+        <div class="warning-message">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-text">
+                <h3>Westlaw Only</h3>
+                <p>This extension only works on Westlaw pages. Please navigate to <strong>westlaw.com</strong> to use the reading enhancements.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls">
+    <button class="btn toggle-btn killswitch-btn" id="toggleKillswitch">🔴 DISABLE ALL MODIFICATIONS</button>
+    <button class="btn toggle-btn" id="reloadExtension" style="background: #6f42c1; color: white; border-color: #6f42c1;">🔄 Reload Extension</button>
+    
+    <div class="section">
+        <div class="section-title">Font Size</div>
+        <div class="button-group">
+            <button class="btn" id="decreaseFontSize">-</button>
+            <button class="btn" id="resetFontSize">Reset</button>
+            <button class="btn" id="increaseFontSize">+</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Line Height</div>
+        <div class="button-group">
+            <button class="btn" id="decreaseLineHeight">-</button>
+            <button class="btn" id="resetLineHeight">Reset</button>
+            <button class="btn" id="increaseLineHeight">+</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">White Margins</div>
+        <div class="button-group">
+            <button class="btn" id="decreaseMargins">Narrower</button>
+            <button class="btn" id="resetMargins">Reset</button>
+            <button class="btn" id="increaseMargins">Wider</button>
+        </div>
+        <div class="button-group">
+            <button class="btn" id="moveLeft">← Shift Left</button>
+            <button class="btn" id="moveRight">Shift Right →</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Layout</div>
+        <button class="btn toggle-btn" id="toggleSidebar">🙈 Hide Sidebar</button>
+        <button class="btn toggle-btn" id="toggleFocusMode">🎯 Focus Mode: OFF</button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Session Management</div>
+        <button class="btn toggle-btn" id="toggleKeepAlive">🔄 Keep Session Alive: OFF</button>
+    </div>
+
+    <div class="section nav-section">
+        <div class="section-title">Search Term Navigation</div>
+        <div class="button-group">
+            <button class="btn" id="navigatePrevious">← Prev Term</button>
+            <button class="btn" id="scrollToTop">↑ Top/Prev</button>
+            <button class="btn" id="navigateNext">Next Term →</button>
+        </div>
+        
+        <div class="section-title" style="margin-top: 12px;">Document Navigation</div>
+        <div class="button-group">
+            <button class="btn" id="navigatePreviousDocument">⬅️ Prev Doc</button>
+            <button class="btn" id="navigateNextDocument">Next Doc ➡️</button>
+        </div>
+        
+        <button class="btn toggle-btn" id="copyAndSwitchToNotes">📋 Save Quotation</button>
+        <button class="btn toggle-btn" id="viewNotes" style="margin-top: 4px;">📝 View Notes</button>
+        <div style="font-size: 11px; color: #666; margin-top: 4px; text-align: center;">
+            Terms: N/→ (next), ← (prev) | Docs: Shift+← (prev), Shift+→ (next)<br>
+            ↑ (top/prev doc), Enter (copy)
+        </div>
+    </div>
+
+    </div>
+
+    <div class="status" id="status">
+        Loading...
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html> 
