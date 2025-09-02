@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
             notesEnabled: true,
             opinionBordersEnabled: true,
             opinionHighlightingEnabled: true,
-            starPageHighlightingEnabled: true
+            starPageHighlightingEnabled: true,
+            footnoteReorganizationEnabled: false
         }, function(items) {
             document.getElementById('toggleFontSize').checked = items.fontSizeEnabled;
             document.getElementById('toggleLineHeight').checked = items.lineHeightEnabled;
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('toggleOpinionBorders').checked = items.opinionBordersEnabled;
             document.getElementById('toggleOpinionHighlighting').checked = items.opinionHighlightingEnabled;
             document.getElementById('toggleStarPageHighlighting').checked = items.starPageHighlightingEnabled;
+            document.getElementById('toggleFootnoteReorganization').checked = items.footnoteReorganizationEnabled;
             
             updateFeatureVisibility();
         });
@@ -343,6 +345,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('toggleStarPageHighlighting').addEventListener('change', function() {
         saveFeatureToggle('starPageHighlightingEnabled', this.checked);
         sendMessage('toggleStarPageHighlighting');
+    });
+
+    document.getElementById('toggleFootnoteReorganization').addEventListener('change', function() {
+        saveFeatureToggle('footnoteReorganizationEnabled', this.checked);
+        sendMessage('toggleFootnoteReorganization');
     });
 
     // Initial page check and load toggles

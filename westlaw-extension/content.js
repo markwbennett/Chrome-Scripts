@@ -108,12 +108,14 @@
     let opinionBordersEnabled = true;
     let opinionHighlightingEnabled = true;
     let starPageHighlightingEnabled = true;
+    let footnoteReorganizationEnabled = false;
 
     async function initializeKillswitch() {
         killswitchEnabled = await getValue(`${KILLSWITCH_STORAGE_KEY}_${currentDomain}`, false);
         opinionBordersEnabled = await getValue('opinionBordersEnabled', true);
         opinionHighlightingEnabled = await getValue('opinionHighlightingEnabled', true);
         starPageHighlightingEnabled = await getValue('starPageHighlightingEnabled', true);
+        footnoteReorganizationEnabled = await getValue('footnoteReorganizationEnabled', false);
     }
 
     function toggleKillswitch() {
@@ -834,6 +836,85 @@
         updateDivFontSize(); // This will regenerate the CSS with updated star page highlighting
     }
 
+    async function toggleFootnoteReorganization() {
+        footnoteReorganizationEnabled = await getValue('footnoteReorganizationEnabled', false);
+        reorganizeFootnotes();
+    }
+
+    function reorganizeFootnotes() {
+        if (killswitchEnabled) return;
+
+        // Find all footnote references
+        const footnoteRefs = document.querySelectorAll('a.co_footnoteReference');
+        
+        if (!footnoteReorganizationEnabled) {
+            // Restore original footnote locations
+            document.querySelectorAll('.inline-footnote-westlaw').forEach(inlineFootnote => {
+                inlineFootnote.remove();
+            });
+            
+            // Show original footnotes
+            document.querySelectorAll('[id^="co_footnote_B"]').forEach(footnote => {
+                footnote.style.display = '';
+            });
+            return;
+        }
+
+        // Process each footnote reference
+        footnoteRefs.forEach((ref, index) => {
+            const footnoteId = ref.getAttribute('href').substring(1); // Remove the #
+            
+            // Skip if we've already processed this footnote
+            if (document.querySelector(`[data-footnote-id="${footnoteId}"]`)) {
+                return;
+            }
+            
+            const footnoteElement = document.querySelector(`#${footnoteId}`);
+            
+            if (footnoteElement) {
+                // Find the footnote content - need to go up to parent container
+                const footnoteNumberDiv = footnoteElement.closest('div'); // This is co_footnoteNumber
+                const footnoteContainer = footnoteNumberDiv.parentElement; // This should be the parent containing both number and body
+                const footnoteBody = footnoteContainer?.querySelector('.co_footnoteBody');
+                
+                if (footnoteBody) {
+                    // Find the paragraph containing this footnote reference
+                    const paragraph = ref.closest('.co_paragraph, p, div.co_paragraphText');
+                    
+                    if (paragraph) {
+                        // Create inline footnote element
+                        const inlineFootnote = document.createElement('div');
+                        inlineFootnote.className = 'inline-footnote-westlaw';
+                        inlineFootnote.setAttribute('data-footnote-id', footnoteId);
+                        inlineFootnote.style.cssText = `
+                            margin: 10px 0;
+                            padding: 8px 12px;
+                            background-color: #f8f9fa;
+                            border-left: 4px solid #007bff;
+                            font-size: 0.9em;
+                            line-height: 1.4;
+                            border-radius: 0 4px 4px 0;
+                        `;
+                        
+                        // Add footnote number and content
+                        inlineFootnote.innerHTML = `
+                            <div style="font-weight: bold; color: #007bff; margin-bottom: 4px;">
+                                Footnote ${ref.textContent}:
+                            </div>
+                            <div>${footnoteBody.innerHTML}</div>
+                        `;
+                        
+                        // Insert after the paragraph
+                        paragraph.parentNode.insertBefore(inlineFootnote, paragraph.nextSibling);
+                        
+                        // Hide the original footnote
+                        footnoteContainer.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+
     // ===========================================
     // NOTIFICATION SYSTEM
     // ===========================================
@@ -1413,6 +1494,9 @@
             case 'toggleStarPageHighlighting':
                 toggleStarPageHighlighting();
                 break;
+            case 'toggleFootnoteReorganization':
+                toggleFootnoteReorganization();
+                break;
             case 'toggleCitingReferencesFocus':
                 toggleCitingReferencesFocus();
                 break;
@@ -1467,6 +1551,7 @@
         updateKeepAlive();
         updateOpinionColors();
         updateCitingReferencesDisplay();
+        reorganizeFootnotes();
     }
 
     async function initialize() {
