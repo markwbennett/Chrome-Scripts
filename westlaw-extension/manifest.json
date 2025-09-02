@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chrome Westlaw Enhancements",
-  "version": "1.5",
+  "version": "1.6.3",
   "description": "Enhanced Westlaw reading experience with customizable typography, layout controls, and navigation shortcuts",
   "permissions": [
     "storage",

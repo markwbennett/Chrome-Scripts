@@ -65,14 +65,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // Send message to content script
     function sendMessage(action) {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            if (tabs[0] && tabs[0].url.includes('westlaw.com')) {
+            if (tabs[0] && (tabs[0].url.includes('westlaw.com') || tabs[0].url.includes('file://'))) {
                 chrome.tabs.sendMessage(tabs[0].id, {action: action}, function(response) {
                     if (chrome.runtime.lastError) {
                         console.log('Content script not ready:', chrome.runtime.lastError.message);
-                        // Optionally show user feedback
                         document.getElementById('status').textContent = 'Content script loading...';
+                        
+                        // Retry after a brief delay for killswitch
+                        if (action === 'toggleKillswitch') {
+                            setTimeout(() => {
+                                chrome.tabs.sendMessage(tabs[0].id, {action: action});
+                            }, 500);
+                        }
                     }
                 });
+            }
+        });
+    }
+
+    // Reload the current tab
+    function reloadPage() {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            if (tabs[0]) {
+                chrome.tabs.reload(tabs[0].id);
+                window.close(); // Close the popup
             }
         });
     }
@@ -106,8 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
                     if (response) {
+                        console.log('updateStatus response:', response);
                         // Update killswitch button
                         const killswitchBtn = document.getElementById('toggleKillswitch');
+                        console.log('Updating killswitch button, enabled:', response.killswitchEnabled);
                         if (response.killswitchEnabled) {
                             killswitchBtn.textContent = '🟢 ENABLE ALL MODIFICATIONS';
                             killswitchBtn.classList.add('enabled');
@@ -280,10 +298,22 @@ document.addEventListener('DOMContentLoaded', function() {
         window.close();
     });
 
-    // Killswitch control
+    // Killswitch control  
+    let killswitchClickTimeout = null;
     document.getElementById('toggleKillswitch').addEventListener('click', function() {
+        console.log('Killswitch button clicked');
+        
+        // Prevent rapid double-clicks
+        if (killswitchClickTimeout) {
+            clearTimeout(killswitchClickTimeout);
+        }
+        
         sendMessage('toggleKillswitch');
-        setTimeout(updateStatus, 100);
+        
+        killswitchClickTimeout = setTimeout(() => {
+            updateStatus();
+            killswitchClickTimeout = null;
+        }, 500);
     });
 
     // Reload extension control
@@ -310,26 +340,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('toggleSidebarFeature').addEventListener('change', function() {
         saveFeatureToggle('sidebarEnabled', this.checked);
+        sendMessage('toggleSidebarFeature');
     });
 
     document.getElementById('toggleFocusModeFeature').addEventListener('change', function() {
         saveFeatureToggle('focusModeEnabled', this.checked);
+        sendMessage('toggleFocusModeFeature');
     });
 
     document.getElementById('toggleKeepAliveFeature').addEventListener('change', function() {
         saveFeatureToggle('keepAliveEnabled', this.checked);
+        sendMessage('toggleKeepAliveFeature');
     });
 
     document.getElementById('toggleSearchNav').addEventListener('change', function() {
         saveFeatureToggle('searchNavEnabled', this.checked);
+        setTimeout(reloadPage, 100);
     });
 
     document.getElementById('toggleDocNav').addEventListener('change', function() {
         saveFeatureToggle('docNavEnabled', this.checked);
+        setTimeout(reloadPage, 100);
     });
 
     document.getElementById('toggleNotesFeature').addEventListener('change', function() {
         saveFeatureToggle('notesEnabled', this.checked);
+        setTimeout(reloadPage, 100);
     });
 
     document.getElementById('toggleOpinionBorders').addEventListener('change', function() {
@@ -352,9 +388,27 @@ document.addEventListener('DOMContentLoaded', function() {
         sendMessage('toggleFootnoteReorganization');
     });
 
+
+    // Listen for status updates from content script
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.action === 'killswitchStatusUpdate') {
+            console.log('Received killswitch status update:', message.killswitchEnabled);
+            const killswitchBtn = document.getElementById('toggleKillswitch');
+            if (message.killswitchEnabled) {
+                killswitchBtn.textContent = '🟢 ENABLE ALL MODIFICATIONS';
+                killswitchBtn.classList.add('enabled');
+            } else {
+                killswitchBtn.textContent = '🔴 DISABLE ALL MODIFICATIONS';
+                killswitchBtn.classList.remove('enabled');
+            }
+        }
+    });
+
     // Initial page check and load toggles
     checkWestlawPage();
     loadFeatureToggles();
     
-    // Set fallback version
-    document.getElementById('version').textContent = 'v1.5';});
+    // Set version from manifest
+    const manifest = chrome.runtime.getManifest();
+    document.getElementById('version').textContent = `v${manifest.version}`;
+});

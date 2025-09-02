@@ -118,9 +118,12 @@
         footnoteReorganizationEnabled = await getValue('footnoteReorganizationEnabled', false);
     }
 
-    function toggleKillswitch() {
+    async function toggleKillswitch() {
+        console.log('toggleKillswitch called, current state:', killswitchEnabled);
         killswitchEnabled = !killswitchEnabled;
-        setValue(`${KILLSWITCH_STORAGE_KEY}_${currentDomain}`, killswitchEnabled);
+        console.log('toggleKillswitch new state:', killswitchEnabled);
+        await setValue(`${KILLSWITCH_STORAGE_KEY}_${currentDomain}`, killswitchEnabled);
+        console.log('Killswitch state saved to storage:', killswitchEnabled);
         
         if (killswitchEnabled) {
             // Remove all modifications
@@ -131,6 +134,14 @@
             applyAllSettings();
             showNotification('All modifications enabled', 'killswitch');
         }
+        
+        console.log('Killswitch toggle completed, final state:', killswitchEnabled);
+        
+        // Send status update to popup
+        chrome.runtime.sendMessage({
+            action: 'killswitchStatusUpdate',
+            killswitchEnabled: killswitchEnabled
+        });
     }
 
     function removeAllModifications() {
@@ -190,6 +201,7 @@
     }
 
     function updateDivFontSize() {
+        console.log('updateDivFontSize called, killswitch:', killswitchEnabled);
         if (killswitchEnabled) return;
         
         if (divStyleElement) {
@@ -853,9 +865,19 @@
                 inlineFootnote.remove();
             });
             
-            // Show original footnotes
-            document.querySelectorAll('[id^="co_footnote_B"]').forEach(footnote => {
-                footnote.style.display = '';
+            // Show original footnotes by restoring their parent containers
+            document.querySelectorAll('[data-original-footnote="hidden"]').forEach(container => {
+                container.style.display = '';
+                container.removeAttribute('data-original-footnote');
+            });
+            
+            // Restore original footnotes header text
+            const footnotesHeaders = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            footnotesHeaders.forEach(header => {
+                if (header.getAttribute('data-original-text')) {
+                    header.textContent = header.getAttribute('data-original-text');
+                    header.removeAttribute('data-original-text');
+                }
             });
             return;
         }
@@ -907,9 +929,22 @@
                         // Insert after the paragraph
                         paragraph.parentNode.insertBefore(inlineFootnote, paragraph.nextSibling);
                         
-                        // Hide the original footnote
+                        // Hide the original footnote and mark it for restoration
                         footnoteContainer.style.display = 'none';
+                        footnoteContainer.setAttribute('data-original-footnote', 'hidden');
                     }
+                }
+            }
+        });
+
+        // Update footnotes header text
+        const footnotesHeaders = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        footnotesHeaders.forEach(header => {
+            if (header.textContent.toUpperCase().includes('FOOTNOTES') || 
+                header.textContent.toUpperCase().includes('FOOTNOTE')) {
+                if (!header.getAttribute('data-original-text')) {
+                    header.setAttribute('data-original-text', header.textContent);
+                    header.textContent = 'FOOTNOTES ARE INLINE ABOVE';
                 }
             }
         });
@@ -1423,14 +1458,19 @@
     // ===========================================
     // MESSAGE LISTENER FOR POPUP COMMANDS
     // ===========================================
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         switch(request.action) {
             case 'increaseFontSize':
+                console.log('increaseFontSize called, current size:', divFontSize);
                 divFontSize = Math.min(divFontSize + 1, 36);
+                console.log('new font size:', divFontSize);
                 updateDivFontSize();
                 break;
             case 'decreaseFontSize':
+                console.log('decreaseFontSize called, current size:', divFontSize);
                 divFontSize = Math.max(divFontSize - 1, 10);
+                console.log('new font size:', divFontSize);
                 updateDivFontSize();
                 break;
             case 'resetFontSize':
@@ -1497,6 +1537,15 @@
             case 'toggleFootnoteReorganization':
                 toggleFootnoteReorganization();
                 break;
+            case 'toggleSidebarFeature':
+                updateSidebarVisibility();
+                break;
+            case 'toggleFocusModeFeature':
+                updateFocusMode();
+                break;
+            case 'toggleKeepAliveFeature':
+                updateKeepAlive();
+                break;
             case 'toggleCitingReferencesFocus':
                 toggleCitingReferencesFocus();
                 break;
@@ -1519,10 +1568,19 @@
                 copyAndSwitchToNotes();
                 break;
             case 'toggleKillswitch':
+                // Prevent rapid double-toggles
+                if (window.killswitchToggling) {
+                    console.log('Ignoring duplicate killswitch toggle');
+                    return;
+                }
+                window.killswitchToggling = true;
                 toggleKillswitch();
+                setTimeout(() => {
+                    window.killswitchToggling = false;
+                }, 1000);
                 break;
             case 'getStatus':
-                sendResponse({
+                const statusResponse = {
                     fontSize: divFontSize,
                     lineHeight: lineHeight,
                     leftMargin: leftMargin,
@@ -1535,15 +1593,23 @@
                     opinionHighlightingEnabled: opinionHighlightingEnabled,
                     citingReferencesEnabled: citingReferencesEnabled,
                     version: SCRIPT_VERSION
-                });
+                };
+                console.log('getStatus response:', statusResponse);
+                sendResponse(statusResponse);
                 break;
         }
-    });
+        });
+    }
 
     // ===========================================
     // INITIALIZATION
     // ===========================================
     async function applyAllSettings() {
+        console.log('applyAllSettings called, killswitch:', killswitchEnabled);
+        if (killswitchEnabled) {
+            console.log('applyAllSettings blocked by killswitch');
+            return;
+        }
         updateDivFontSize();
         updateMargins();
         updateSidebarVisibility();
