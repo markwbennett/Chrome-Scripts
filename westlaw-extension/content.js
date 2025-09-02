@@ -107,11 +107,13 @@
 
     let opinionBordersEnabled = true;
     let opinionHighlightingEnabled = true;
+    let starPageHighlightingEnabled = true;
 
     async function initializeKillswitch() {
         killswitchEnabled = await getValue(`${KILLSWITCH_STORAGE_KEY}_${currentDomain}`, false);
         opinionBordersEnabled = await getValue('opinionBordersEnabled', true);
         opinionHighlightingEnabled = await getValue('opinionHighlightingEnabled', true);
+        starPageHighlightingEnabled = await getValue('starPageHighlightingEnabled', true);
     }
 
     function toggleKillswitch() {
@@ -257,40 +259,104 @@
     }
 
     function generateStarPageCSS() {
-        // Detect background color of the page
-        let backgroundColor = 'rgb(255, 255, 255)'; // Default to white
+        // Return empty CSS if star page highlighting is disabled
+        if (!starPageHighlightingEnabled) {
+            return '';
+        }
         
-        // Try to get the actual background color from body or document
-        if (document.body) {
-            const bodyStyle = window.getComputedStyle(document.body);
-            backgroundColor = bodyStyle.backgroundColor;
+        // Detect if we're on Westlaw Edge vs Classic
+        const isWestlawEdge = document.querySelector('.co_starPageMetadataItem') !== null || 
+                             window.location.hostname.includes('next.westlaw.com') ||
+                             document.body.classList.contains('co_edgeStyles');
+        
+        if (isWestlawEdge) {
+            // For Westlaw Edge: Detect background color and use appropriate contrast
+            let backgroundColor = 'rgb(255, 255, 255)'; // Default to white
             
-            // If body is transparent, check document element
-            if (backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
-                const docStyle = window.getComputedStyle(document.documentElement);
-                backgroundColor = docStyle.backgroundColor;
+            // Try to get the actual background color from body or document
+            if (document.body) {
+                const bodyStyle = window.getComputedStyle(document.body);
+                backgroundColor = bodyStyle.backgroundColor;
+                
+                // If body is transparent, check document element
+                if (backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
+                    const docStyle = window.getComputedStyle(document.documentElement);
+                    backgroundColor = docStyle.backgroundColor;
+                }
             }
-        }
-        
-        // Fallback to white if still transparent
-        if (!backgroundColor || backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
-            backgroundColor = 'rgb(255, 255, 255)';
-        }
-        
-        // Calculate if background is light or dark
-        const isLightBackground = isLightColor(backgroundColor);
-        
-        // Generate CSS with high specificity and !important
-        const bgColor = isLightBackground ? '#000000' : '#ffffff';
-        const textColor = isLightBackground ? '#ffffff' : '#000000';
-        
-        return TARGET_SELECTORS.map(selector => `
-            ${selector} .co_starPage,
-            ${selector} span.co_starPage {
-                background-color: ${bgColor} !important;
-                color: ${textColor} !important;
+            
+            // Fallback to white if still transparent
+            if (!backgroundColor || backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
+                backgroundColor = 'rgb(255, 255, 255)';
             }
-        `).join('\n');
+            
+            // Calculate if background is light or dark
+            const isLightBackground = isLightColor(backgroundColor);
+            
+            // Set colors based on background
+            const bgColor = isLightBackground ? '#000000' : '#ffffff';
+            const textColor = isLightBackground ? '#ffffff' : '#000000';
+            const borderColor = isLightBackground ? '#000000' : '#ffffff';
+            
+            return TARGET_SELECTORS.map(selector => `
+                ${selector} .co_starPage,
+                ${selector} span.co_starPage {
+                    border: 2px solid ${borderColor} !important;
+                    border-radius: 4px !important;
+                    background-color: ${bgColor} !important;
+                    background-image: none !important;
+                    background: ${bgColor} !important;
+                    color: ${textColor} !important;
+                    padding: 1px 3px !important;
+                    font-weight: bold !important;
+                    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3) !important;
+                    position: relative !important;
+                    z-index: 10 !important;
+                }
+                ${selector} .co_starPage::before,
+                ${selector} span.co_starPage::before,
+                ${selector} .co_starPage::after,
+                ${selector} span.co_starPage::after {
+                    display: none !important;
+                }
+            `).join('\n');
+        } else {
+            // For Westlaw Classic: Use original high-contrast approach
+            // Detect background color of the page
+            let backgroundColor = 'rgb(255, 255, 255)'; // Default to white
+            
+            // Try to get the actual background color from body or document
+            if (document.body) {
+                const bodyStyle = window.getComputedStyle(document.body);
+                backgroundColor = bodyStyle.backgroundColor;
+                
+                // If body is transparent, check document element
+                if (backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
+                    const docStyle = window.getComputedStyle(document.documentElement);
+                    backgroundColor = docStyle.backgroundColor;
+                }
+            }
+            
+            // Fallback to white if still transparent
+            if (!backgroundColor || backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
+                backgroundColor = 'rgb(255, 255, 255)';
+            }
+            
+            // Calculate if background is light or dark
+            const isLightBackground = isLightColor(backgroundColor);
+            
+            // Generate CSS with high specificity and !important
+            const bgColor = isLightBackground ? '#000000' : '#ffffff';
+            const textColor = isLightBackground ? '#ffffff' : '#000000';
+            
+            return TARGET_SELECTORS.map(selector => `
+                ${selector} .co_starPage,
+                ${selector} span.co_starPage {
+                    background-color: ${bgColor} !important;
+                    color: ${textColor} !important;
+                }
+            `).join('\n');
+        }
     }
 
     function isLightColor(color) {
@@ -761,6 +827,11 @@
     async function toggleOpinionHighlighting() {
         opinionHighlightingEnabled = await getValue('opinionHighlightingEnabled', true);
         updateOpinionColors();
+    }
+
+    async function toggleStarPageHighlighting() {
+        starPageHighlightingEnabled = await getValue('starPageHighlightingEnabled', true);
+        updateDivFontSize(); // This will regenerate the CSS with updated star page highlighting
     }
 
     // ===========================================
@@ -1338,6 +1409,9 @@
                 break;
             case 'toggleOpinionBorders':
                 toggleOpinionBorders();
+                break;
+            case 'toggleStarPageHighlighting':
+                toggleStarPageHighlighting();
                 break;
             case 'toggleCitingReferencesFocus':
                 toggleCitingReferencesFocus();

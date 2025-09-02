@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
             docNavEnabled: true,
             notesEnabled: true,
             opinionBordersEnabled: true,
-            opinionHighlightingEnabled: true
+            opinionHighlightingEnabled: true,
+            starPageHighlightingEnabled: true
         }, function(items) {
             document.getElementById('toggleFontSize').checked = items.fontSizeEnabled;
             document.getElementById('toggleLineHeight').checked = items.lineHeightEnabled;
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('toggleNotesFeature').checked = items.notesEnabled;
             document.getElementById('toggleOpinionBorders').checked = items.opinionBordersEnabled;
             document.getElementById('toggleOpinionHighlighting').checked = items.opinionHighlightingEnabled;
+            document.getElementById('toggleStarPageHighlighting').checked = items.starPageHighlightingEnabled;
             
             updateFeatureVisibility();
         });
@@ -336,6 +338,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('toggleOpinionHighlighting').addEventListener('change', function() {
         saveFeatureToggle('opinionHighlightingEnabled', this.checked);
         sendMessage('toggleOpinionHighlighting');
+    });
+
+    document.getElementById('toggleStarPageHighlighting').addEventListener('change', function() {
+        saveFeatureToggle('starPageHighlightingEnabled', this.checked);
+        sendMessage('toggleStarPageHighlighting');
     });
 
     // Initial page check and load toggles

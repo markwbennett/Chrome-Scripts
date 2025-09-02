@@ -17,11 +17,12 @@
     }
   ],
   "host_permissions": [
-    "*://*.westlaw.com/*"
+    "*://*.westlaw.com/*",
+    "file:///*"
   ],
   "content_scripts": [
     {
-      "matches": ["*://*.westlaw.com/*"],
+      "matches": ["*://*.westlaw.com/*", "file:///Users/markbennett/github/Chrome%20Extensions/westlaw-extension/samples/*"],
       "js": ["content.js"],
       "run_at": "document_end"
     }
