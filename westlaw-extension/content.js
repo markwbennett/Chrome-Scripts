@@ -882,8 +882,8 @@
             return;
         }
 
-        // Process each footnote reference
-        footnoteRefs.forEach((ref, index) => {
+        // Process each footnote reference in reverse order to maintain correct sequence
+        Array.from(footnoteRefs).reverse().forEach((ref, index) => {
             const footnoteId = ref.getAttribute('href').substring(1); // Remove the #
             
             // Skip if we've already processed this footnote

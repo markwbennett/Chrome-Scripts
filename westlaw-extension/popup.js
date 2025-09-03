@@ -6,9 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fontSizeEnabled: true,
             lineHeightEnabled: true,
             marginsEnabled: true,
-            sidebarEnabled: true,
-            focusModeEnabled: true,
-            keepAliveEnabled: true,
             searchNavEnabled: true,
             docNavEnabled: true,
             notesEnabled: true,
@@ -20,9 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('toggleFontSize').checked = items.fontSizeEnabled;
             document.getElementById('toggleLineHeight').checked = items.lineHeightEnabled;
             document.getElementById('toggleMargins').checked = items.marginsEnabled;
-            document.getElementById('toggleSidebarFeature').checked = items.sidebarEnabled;
-            document.getElementById('toggleFocusModeFeature').checked = items.focusModeEnabled;
-            document.getElementById('toggleKeepAliveFeature').checked = items.keepAliveEnabled;
+            // Direct toggles will be set by updateStatus() response
             document.getElementById('toggleSearchNav').checked = items.searchNavEnabled;
             document.getElementById('toggleDocNav').checked = items.docNavEnabled;
             document.getElementById('toggleNotesFeature').checked = items.notesEnabled;
@@ -47,9 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const fontSizeEnabled = document.getElementById('toggleFontSize').checked;
         const lineHeightEnabled = document.getElementById('toggleLineHeight').checked;
         const marginsEnabled = document.getElementById('toggleMargins').checked;
-        const sidebarEnabled = document.getElementById('toggleSidebarFeature').checked;
-        const focusModeEnabled = document.getElementById('toggleFocusModeFeature').checked;
-        const keepAliveEnabled = document.getElementById('toggleKeepAliveFeature').checked;
         const searchNavEnabled = document.getElementById('toggleSearchNav').checked;
         const docNavEnabled = document.getElementById('toggleDocNav').checked;
         const notesEnabled = document.getElementById('toggleNotesFeature').checked;
@@ -57,8 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('fontSizeSection').style.display = fontSizeEnabled ? 'block' : 'none';
         document.getElementById('lineHeightSection').style.display = lineHeightEnabled ? 'block' : 'none';
         document.getElementById('marginsSection').style.display = marginsEnabled ? 'block' : 'none';
-        document.getElementById('layoutSection').style.display = (sidebarEnabled || focusModeEnabled) ? 'block' : 'none';
-        document.getElementById('sessionSection').style.display = keepAliveEnabled ? 'block' : 'none';
         document.getElementById('navigationSection').style.display = (searchNavEnabled || docNavEnabled || notesEnabled) ? 'block' : 'none';
     }
     
@@ -134,9 +124,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             killswitchBtn.classList.remove('enabled');
                         }
                         
-                        // Update toggle button states
-                        const sidebarBtn = document.getElementById('toggleSidebar');
-                        const focusBtn = document.getElementById('toggleFocusMode');
+                        // Update direct toggle states
+                        document.getElementById('toggleSidebar').checked = response.sidebarHidden || false;
+                        document.getElementById('toggleFocusMode').checked = response.focusModeEnabled || false;
+                        document.getElementById('toggleKeepAlive').checked = response.keepAliveEnabled || false;
+                        document.getElementById('toggleCitingReferencesFocus').checked = response.citingReferencesEnabled || false;
                         
                         if (response.sidebarHidden) {
                             sidebarBtn.classList.add('active');
@@ -338,19 +330,20 @@ document.addEventListener('DOMContentLoaded', function() {
         saveFeatureToggle('marginsEnabled', this.checked);
     });
 
-    document.getElementById('toggleSidebarFeature').addEventListener('change', function() {
-        saveFeatureToggle('sidebarEnabled', this.checked);
+    document.getElementById('toggleSidebar').addEventListener('change', function() {
         sendMessage('toggleSidebar');
     });
 
-    document.getElementById('toggleFocusModeFeature').addEventListener('change', function() {
-        saveFeatureToggle('focusModeEnabled', this.checked);
+    document.getElementById('toggleFocusMode').addEventListener('change', function() {
         sendMessage('toggleFocusMode');
     });
 
-    document.getElementById('toggleKeepAliveFeature').addEventListener('change', function() {
-        saveFeatureToggle('keepAliveEnabled', this.checked);
+    document.getElementById('toggleKeepAlive').addEventListener('change', function() {
         sendMessage('toggleKeepAlive');
+    });
+
+    document.getElementById('toggleCitingReferencesFocus').addEventListener('change', function() {
+        sendMessage('toggleCitingReferencesFocus');
     });
 
     document.getElementById('toggleSearchNav').addEventListener('change', function() {
