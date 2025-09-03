@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <style>
         body {
-            width: 320px;
+            width: 480px;
             padding: 16px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-size: 14px;
@@ -31,7 +31,7 @@
         }
         
         .section {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         
         .section-title {
@@ -165,8 +165,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 8px;
+            margin-bottom: 4px;
+            padding: 6px;
             background: #f8f9fa;
             border-radius: 4px;
         }
@@ -221,6 +221,17 @@
         input:checked + .slider:before {
             transform: translateX(20px);
         }
+        
+        .toggles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .toggle-container {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -247,106 +258,110 @@
     <div class="section">
         <div class="section-title">Feature Toggles</div>
         
-        <div class="toggle-container">
-            <span class="toggle-label">Font Size Controls</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleFontSize" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Line Height Controls</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleLineHeight" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Margin Controls</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleMargins" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Sidebar Toggle</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleSidebarFeature" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Focus Mode</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleFocusModeFeature" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Session Keep Alive</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleKeepAliveFeature" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Search Navigation</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleSearchNav" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Document Navigation</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleDocNav" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Notes Feature</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleNotesFeature" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-container">
-            <span class="toggle-label">Opinion Colorizer (Borders)</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleOpinionBorders" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-container">
-            <span class="toggle-label">Opinion Colorizer (Highlighting)</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleOpinionHighlighting" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Star Page Highlighting</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleStarPageHighlighting" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        
-        <div class="toggle-container">
-            <span class="toggle-label">Inline Footnotes</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="toggleFootnoteReorganization">
-                <span class="slider"></span>
-            </label>
+        <div class="toggles-grid">
+            <div class="toggle-container">
+                <span class="toggle-label">Font Size Controls</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleFontSize" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Line Height Controls</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleLineHeight" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Margin Controls</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleMargins" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Sidebar Toggle</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleSidebarFeature" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Focus Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleFocusModeFeature" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Session Keep Alive</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleKeepAliveFeature" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Search Navigation</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleSearchNav" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Document Navigation</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleDocNav" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Notes Feature</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleNotesFeature" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Opinion Colorizer (Borders)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleOpinionBorders" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Opinion Colorizer (Highlighting)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleOpinionHighlighting" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Star Page Highlighting</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleStarPageHighlighting" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Inline Footnotes</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleFootnoteReorganization">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
 
     <div class="section" id="fontSizeSection">

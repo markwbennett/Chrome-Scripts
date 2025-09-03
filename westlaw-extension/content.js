@@ -1537,15 +1537,6 @@
             case 'toggleFootnoteReorganization':
                 toggleFootnoteReorganization();
                 break;
-            case 'toggleSidebarFeature':
-                updateSidebarVisibility();
-                break;
-            case 'toggleFocusModeFeature':
-                updateFocusMode();
-                break;
-            case 'toggleKeepAliveFeature':
-                updateKeepAlive();
-                break;
             case 'toggleCitingReferencesFocus':
                 toggleCitingReferencesFocus();
                 break;

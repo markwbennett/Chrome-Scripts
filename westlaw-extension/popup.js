@@ -340,17 +340,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('toggleSidebarFeature').addEventListener('change', function() {
         saveFeatureToggle('sidebarEnabled', this.checked);
-        sendMessage('toggleSidebarFeature');
+        sendMessage('toggleSidebar');
     });
 
     document.getElementById('toggleFocusModeFeature').addEventListener('change', function() {
         saveFeatureToggle('focusModeEnabled', this.checked);
-        sendMessage('toggleFocusModeFeature');
+        sendMessage('toggleFocusMode');
     });
 
     document.getElementById('toggleKeepAliveFeature').addEventListener('change', function() {
         saveFeatureToggle('keepAliveEnabled', this.checked);
-        sendMessage('toggleKeepAliveFeature');
+        sendMessage('toggleKeepAlive');
     });
 
     document.getElementById('toggleSearchNav').addEventListener('change', function() {
