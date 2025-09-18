@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
             opinionBordersEnabled: true,
             opinionHighlightingEnabled: true,
             starPageHighlightingEnabled: true,
-            footnoteReorganizationEnabled: false
+            footnoteReorganizationEnabled: false,
+            linkOpenerEnabled: false
         }, function(items) {
             document.getElementById('toggleFontSize').checked = items.fontSizeEnabled;
             document.getElementById('toggleLineHeight').checked = items.lineHeightEnabled;
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('toggleOpinionHighlighting').checked = items.opinionHighlightingEnabled;
             document.getElementById('toggleStarPageHighlighting').checked = items.starPageHighlightingEnabled;
             document.getElementById('toggleFootnoteReorganization').checked = items.footnoteReorganizationEnabled;
+            document.getElementById('toggleLinkOpener').checked = items.linkOpenerEnabled;
             
             updateFeatureVisibility();
         });
@@ -129,42 +131,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('toggleFocusMode').checked = response.focusModeEnabled || false;
                         document.getElementById('toggleKeepAlive').checked = response.keepAliveEnabled || false;
                         document.getElementById('toggleCitingReferencesFocus').checked = response.citingReferencesEnabled || false;
+                        document.getElementById('toggleLinkOpener').checked = response.linkOpenerEnabled || false;
                         
-                        if (response.sidebarHidden) {
-                            sidebarBtn.classList.add('active');
-                            sidebarBtn.textContent = '👁️ Show Sidebar';
-                        } else {
-                            sidebarBtn.classList.remove('active');
-                            sidebarBtn.textContent = '🙈 Hide Sidebar';
-                        }
-                        
-                        if (response.focusModeEnabled) {
-                            focusBtn.classList.add('active');
-                            focusBtn.textContent = '🎯 Focus Mode: ON';
-                        } else {
-                            focusBtn.classList.remove('active');
-                            focusBtn.textContent = '�� Focus Mode: OFF';
-                        }
-                        
-                        // Update keep-alive button
-                        const keepAliveBtn = document.getElementById('toggleKeepAlive');
-                        if (response.keepAliveEnabled) {
-                            keepAliveBtn.classList.add('active');
-                            keepAliveBtn.textContent = '🔄 Keep Session Alive: ON';
-                        } else {
-                            keepAliveBtn.classList.remove('active');
-                            keepAliveBtn.textContent = '🔄 Keep Session Alive: OFF';
-                        }
-                        
-                        // Update citing references button
-                        const citingRefsBtn = document.getElementById('toggleCitingReferencesFocus');
-                        if (response.citingReferencesEnabled) {
-                            citingRefsBtn.classList.add('active');
-                            citingRefsBtn.textContent = '📋 Citing References Focus: ON';
-                        } else {
-                            citingRefsBtn.classList.remove('active');
-                            citingRefsBtn.textContent = '📋 Citing References Focus: OFF';
-                        }
+                        // Toggle switches are automatically updated above with the .checked property
                         
                         document.getElementById('status').textContent = 
                             `${response.killswitchEnabled ? 'DISABLED | ' : ''}` +
@@ -239,26 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(updateStatus, 100);
     });
 
-    // Layout controls
-    document.getElementById('toggleSidebar').addEventListener('click', function() {
-        sendMessage('toggleSidebar');
-        setTimeout(updateStatus, 100);
-    });
-
-    document.getElementById('toggleFocusMode').addEventListener('click', function() {
-        sendMessage('toggleFocusMode');
-        setTimeout(updateStatus, 100);
-    });
-
-    document.getElementById('toggleKeepAlive').addEventListener('click', function() {
-        sendMessage('toggleKeepAlive');
-        setTimeout(updateStatus, 100);
-    });
-
-    document.getElementById('toggleCitingReferencesFocus').addEventListener('click', function() {
-        sendMessage('toggleCitingReferencesFocus');
-        setTimeout(updateStatus, 100);
-    });
+    // Layout controls - removed, now handled by 'change' events below
 
     // Navigation controls
     document.getElementById('navigateNext').addEventListener('click', function() {
@@ -332,18 +282,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('toggleSidebar').addEventListener('change', function() {
         sendMessage('toggleSidebar');
+        setTimeout(updateStatus, 100);
     });
 
     document.getElementById('toggleFocusMode').addEventListener('change', function() {
         sendMessage('toggleFocusMode');
+        setTimeout(updateStatus, 100);
     });
 
     document.getElementById('toggleKeepAlive').addEventListener('change', function() {
         sendMessage('toggleKeepAlive');
+        setTimeout(updateStatus, 100);
     });
 
     document.getElementById('toggleCitingReferencesFocus').addEventListener('change', function() {
         sendMessage('toggleCitingReferencesFocus');
+        setTimeout(updateStatus, 100);
     });
 
     document.getElementById('toggleSearchNav').addEventListener('change', function() {
@@ -379,6 +333,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('toggleFootnoteReorganization').addEventListener('change', function() {
         saveFeatureToggle('footnoteReorganizationEnabled', this.checked);
         sendMessage('toggleFootnoteReorganization');
+    });
+
+    document.getElementById('toggleLinkOpener').addEventListener('change', function() {
+        saveFeatureToggle('linkOpenerEnabled', this.checked);
+        sendMessage('toggleLinkOpener');
     });
 
 

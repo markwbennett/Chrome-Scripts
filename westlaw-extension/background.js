@@ -68,5 +68,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }
             });
         });
+    } else if (request.action === 'openInNewTab') {
+        // Open URL in new tab
+        chrome.tabs.create({
+            url: request.url,
+            active: false // Don't switch to the new tab immediately
+        }, function(tab) {
+            if (chrome.runtime.lastError) {
+                console.error('Error opening tab:', chrome.runtime.lastError);
+            } else {
+                console.log('Opened link in new tab:', request.url, 'Tab ID:', tab.id);
+            }
+        });
     }
 }); 

@@ -2,7 +2,7 @@
     'use strict';
     
     // Dynamic version info
-    const SCRIPT_VERSION = '1.5';
+    const SCRIPT_VERSION = '1.6.6';
     const BUILD_TIME = new Date().toISOString();
     
     // Page detection functions
@@ -1326,9 +1326,10 @@
                 margin: 4px 0;
             }
 
-            /* Yellow border for CipDip sections */
+            /* Orange border for concurring-and-dissenting sections */
+            .co_contentBlock.x_opinionCipdip,
             .co_contentBlock.x_opinionCipDip {
-                border: 2px solid rgba(255, 255, 0, 0.8) !important; /* yellow border */
+                border: 2px solid rgba(255, 165, 0, 0.8) !important; /* orange border */
                 border-radius: 4px;
                 padding: 8px;
                 margin: 4px 0;
@@ -1366,9 +1367,10 @@
                 background-color: rgba(255, 255, 0, 0.1) !important; /* yellow highlighting */
             }
 
-            /* Yellow highlighting for CipDip sections */
+            /* Orange highlighting for concurring-and-dissenting sections */
+            .co_contentBlock.x_opinionCipdip,
             .co_contentBlock.x_opinionCipDip {
-                background-color: rgba(255, 255, 0, 0.1) !important; /* yellow highlighting */
+                background-color: rgba(255, 165, 0, 0.15) !important; /* orange highlighting */
             }
 
             /* Grey highlighting for attorney block sections */
@@ -1393,6 +1395,264 @@
 
         (document.head || document.documentElement).appendChild(opinionStyleElement);
     }
+    // ===========================================
+    // HIGHLIGHTED TEXT LINK OPENER MODULE
+    // ===========================================
+    const LINK_OPENER_STORAGE_KEY = 'westlawLinkOpenerEnabled';
+    let linkOpenerEnabled = false;
+
+    async function initializeLinkOpenerSettings() {
+        linkOpenerEnabled = await getValue(`${LINK_OPENER_STORAGE_KEY}_${currentDomain}`, false);
+    }
+
+    function handleTextSelection() {
+        if (killswitchEnabled || !linkOpenerEnabled) return;
+        
+        const selection = window.getSelection();
+        if (selection.rangeCount === 0) return;
+        
+        const selectedText = selection.toString().trim();
+        if (!selectedText) return;
+        
+        // Get the range of selected text
+        const range = selection.getRangeAt(0);
+        const container = range.commonAncestorContainer;
+        
+        // Find the container element that holds the selection
+        const containerElement = container.nodeType === Node.TEXT_NODE ? 
+            container.parentElement : container;
+        
+        // Look for links within the selected content
+        const links = extractLinksFromSelection(range, containerElement);
+        
+        if (links.length > 0) {
+            openLinksInNewTabs(links);
+            showNotification(`Opened ${links.length} link${links.length > 1 ? 's' : ''} in new tabs`, 'navigation');
+        }
+    }
+
+    function extractLinksFromSelection(range, containerElement) {
+        const links = [];
+        
+        // Get all anchor elements within the container and its parents
+        let searchElement = containerElement;
+        const searchElements = [containerElement];
+        
+        // Also search parent elements to catch links that might contain the selection
+        while (searchElement.parentElement && searchElements.length < 5) {
+            searchElement = searchElement.parentElement;
+            searchElements.push(searchElement);
+        }
+        
+        searchElements.forEach(element => {
+            const allLinks = element.querySelectorAll('a[href]');
+            
+            allLinks.forEach(link => {
+                // Check if the link intersects with the selection
+                if (isElementInSelection(link, range)) {
+                    const href = link.getAttribute('href');
+                    console.log('Found link in selection:', {href, text: link.textContent.trim().substring(0, 30)});
+                    
+                    // Accept more types of links including relative URLs and fragment links
+                    if (href && (href.startsWith('http') || href.startsWith('https') || 
+                                href.includes('westlaw.com') || href.startsWith('/') || 
+                                href.includes('Document/FullText') || href.includes('Link/'))) {
+                        // Avoid duplicates
+                        if (!links.some(existingLink => existingLink.url === href)) {
+                            links.push({
+                                url: href,
+                                text: link.textContent.trim(),
+                                element: link
+                            });
+                        }
+                    }
+                }
+            });
+        });
+        
+        return links;
+    }
+
+    function isElementInSelection(element, range) {
+        try {
+            // Create a range for the element
+            const elementRange = document.createRange();
+            elementRange.selectNodeContents(element);
+            
+            // Check if ranges intersect
+            const startComparison = range.compareBoundaryPoints(Range.START_TO_END, elementRange);
+            const endComparison = range.compareBoundaryPoints(Range.END_TO_START, elementRange);
+            
+            // Ranges intersect if start of selection is before end of element
+            // AND end of selection is after start of element
+            return startComparison >= 0 && endComparison <= 0;
+        } catch (e) {
+            // Fallback: check if element is within selection's container
+            return range.intersectsNode && range.intersectsNode(element);
+        }
+    }
+
+    function openLinksInNewTabs(links) {
+        links.forEach(link => {
+            // Use chrome.tabs.create to open in new tab
+            chrome.runtime.sendMessage({
+                action: 'openInNewTab',
+                url: link.url,
+                text: link.text
+            });
+        });
+    }
+
+    function toggleLinkOpener() {
+        linkOpenerEnabled = !linkOpenerEnabled;
+        setValue(`${LINK_OPENER_STORAGE_KEY}_${currentDomain}`, linkOpenerEnabled);
+        showNotification(`Link Opener: ${linkOpenerEnabled ? 'ON - Adds link options to selection menu' : 'OFF'}`, 'navigation');
+    }
+
+    // Add function to add options to Westlaw's selection popup
+    function addLinkOpenerToSelectionMenu() {
+        console.log('addLinkOpenerToSelectionMenu called', {killswitchEnabled, linkOpenerEnabled});
+        if (killswitchEnabled) return;
+        
+        // Try multiple times to find the selection menu as it may load dynamically
+        const attempts = [100, 300, 500, 1000];
+        attempts.forEach((delay, index) => {
+            setTimeout(() => {
+                const selectionMenu = document.getElementById('co_selectedTextMenu');
+                const menuList = document.querySelector('.co_selectedTextMenuList');
+                
+                console.log(`Attempt ${index + 1}: Looking for selection menu:`, {selectionMenu: !!selectionMenu, menuList: !!menuList});
+                
+                if (selectionMenu && menuList) {
+                    // Check if there are links in the current selection
+                    const selection = window.getSelection();
+                    if (selection.rangeCount === 0) return;
+                    
+                    const range = selection.getRangeAt(0);
+                    const container = range.commonAncestorContainer;
+                    const containerElement = container.nodeType === Node.TEXT_NODE ? 
+                        container.parentElement : container;
+                    const links = extractLinksFromSelection(range, containerElement);
+                    
+                    console.log('Selection analysis:', {
+                        hasSelection: selection.rangeCount > 0,
+                        selectedText: selection.toString().substring(0, 50),
+                        linksFound: links.length,
+                        linkOpenerEnabled,
+                        linkDetails: links.map(l => ({url: l.url, text: l.text.substring(0, 30)}))
+                    });
+                    
+                    // Add link opener option only if feature is enabled and links exist
+                    if (linkOpenerEnabled && links.length > 0 && !document.getElementById('westlaw-ext-link-opener')) {
+                        console.log('Adding link opener option');
+                        // Create link opener menu item
+                        const linkOpenerItem = document.createElement('li');
+                        linkOpenerItem.id = 'westlaw-ext-link-opener';
+                        linkOpenerItem.className = 'co_selectedTextMenuListItem';
+                        linkOpenerItem.innerHTML = `
+                            <button type="button" style="width: 100%; text-align: left; padding: 8px 12px; background: none; border: none; cursor: pointer; font: inherit;">
+                                (O)pen ${links.length} link${links.length > 1 ? 's' : ''} in new tabs
+                            </button>
+                        `;
+                        
+                        // Add click handler
+                        linkOpenerItem.querySelector('button').addEventListener('click', function() {
+                            openLinksInNewTabs(links);
+                            showNotification(`Opened ${links.length} link${links.length > 1 ? 's' : ''} in new tabs`, 'navigation');
+                            // Close the selection menu
+                            const closeBtn = selectionMenu.querySelector('.co_overlayBox_closeButton');
+                            if (closeBtn) closeBtn.click();
+                        });
+                        
+                        // Insert after the first menu item (Save to Folder)
+                        const firstItem = menuList.querySelector('li');
+                        if (firstItem && firstItem.nextSibling) {
+                            menuList.insertBefore(linkOpenerItem, firstItem.nextSibling);
+                        } else {
+                            menuList.appendChild(linkOpenerItem);
+                        }
+                    }
+                    
+                    // Always add the "Copy cite to notes" option
+                    if (!document.getElementById('westlaw-ext-copy-cite')) {
+                        console.log('Adding copy cite option');
+                        const copyCiteItem = document.createElement('li');
+                        copyCiteItem.id = 'westlaw-ext-copy-cite';
+                        copyCiteItem.className = 'co_selectedTextMenuListItem';
+                        copyCiteItem.innerHTML = `
+                            <button type="button" style="width: 100%; text-align: left; padding: 8px 12px; background: none; border: none; cursor: pointer; font: inherit;">
+                                Copy cite to notes
+                            </button>
+                        `;
+                        
+                        // Add click handler - use the same logic as Enter key
+                        copyCiteItem.querySelector('button').addEventListener('click', function() {
+                            // First, put error indicator in clipboard as safety measure
+                            navigator.clipboard.writeText('<error in copy cite to notes>').then(() => {
+                                console.log('Error indicator placed in clipboard');
+                                
+                                // Try to click the Copy with Reference button first (like Enter key does)
+                                const copyButton = document.querySelector('button.co_copyWithRefLabel');
+                                const copyContainer = document.querySelector('.co_copyWithRefContainer');
+                                
+                                if (copyButton && copyContainer && !copyContainer.hidden && copyContainer.style.display !== 'none') {
+                                    // Click the Copy with Reference button directly
+                                    copyButton.click();
+                                    showNotification('Copied with reference', 'navigation');
+                                    
+                                    // Use robust clipboard reading with retries
+                                    readClipboardWithRetries();
+                                } else {
+                                    // Fallback: manually copy selected text with error indicator
+                                    const selectedText = window.getSelection().toString().trim();
+                                    if (selectedText) {
+                                        navigator.clipboard.writeText(selectedText).then(() => {
+                                            copyAndSwitchToNotes();
+                                        }).catch(() => {
+                                            // If clipboard write fails, the error indicator will remain
+                                            copyAndSwitchToNotes();
+                                        });
+                                    } else {
+                                        // No selection, just use basic copy which will show error indicator
+                                        copyAndSwitchToNotes();
+                                    }
+                                }
+                            }).catch((err) => {
+                                console.log('Could not write error indicator to clipboard:', err);
+                                // Continue anyway
+                                copyAndSwitchToNotes();
+                            });
+                            
+                            // Close the selection menu
+                            const closeBtn = selectionMenu.querySelector('.co_overlayBox_closeButton');
+                            if (closeBtn) closeBtn.click();
+                        });
+                        
+                        menuList.appendChild(copyCiteItem);
+                    }
+                }
+            });
+        });
+    }
+
+    // Monitor for text selections to add menu items
+    document.addEventListener('mouseup', function(e) {
+        console.log('Mouse up detected, checking for text selection...');
+        const selection = window.getSelection();
+        console.log('Selection:', selection.toString().substring(0, 50));
+        setTimeout(addLinkOpenerToSelectionMenu, 150);
+    });
+
+    // Also handle keyboard selections
+    document.addEventListener('keyup', function(e) {
+        if (e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || 
+                          e.key === 'ArrowUp' || e.key === 'ArrowDown' ||
+                          e.key === 'Home' || e.key === 'End')) {
+            console.log('Keyboard selection detected:', e.key);
+            setTimeout(addLinkOpenerToSelectionMenu, 150);
+        }
+    });
+
     // ===========================================
     // KEYBOARD SHORTCUTS
     // ===========================================
@@ -1433,6 +1693,16 @@
             if (e.key === 'ArrowDown' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 scrollToBottom();
                 e.preventDefault();
+            }
+
+            // Open links in selected text
+            if (e.key === 'o' && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+                if (linkOpenerEnabled) {
+                    handleTextSelection();
+                    e.preventDefault();
+                } else {
+                    showNotification('Link Opener is disabled. Enable it in the popup.', 'navigation');
+                }
             }
 
             // Copy and notes
@@ -1478,10 +1748,11 @@
                 updateDivFontSize();
                 break;
             case 'increaseLineHeight':
+                lineHeight += 0.1;
+                updateLineHeight();
+                break;
             case 'toggleOpinionHighlighting':
                 toggleOpinionHighlighting();
-                break;                lineHeight += 0.1;
-                updateLineHeight();
                 break;
             case 'decreaseLineHeight':
                 lineHeight -= 0.1;
@@ -1540,6 +1811,9 @@
             case 'toggleCitingReferencesFocus':
                 toggleCitingReferencesFocus();
                 break;
+            case 'toggleLinkOpener':
+                toggleLinkOpener();
+                break;
             case 'navigatePrevious':
                 navigatePrevious();
                 break;
@@ -1583,6 +1857,7 @@
                     opinionBordersEnabled: opinionBordersEnabled,
                     opinionHighlightingEnabled: opinionHighlightingEnabled,
                     citingReferencesEnabled: citingReferencesEnabled,
+                    linkOpenerEnabled: linkOpenerEnabled,
                     version: SCRIPT_VERSION
                 };
                 console.log('getStatus response:', statusResponse);
@@ -1618,6 +1893,7 @@
         await initializeSidebarSettings();
         await initializeFocusSettings();
         await initializeKeepAliveSettings();
+        await initializeLinkOpenerSettings();
         
         applyAllSettings();
         
