@@ -26,14 +26,39 @@ A Chrome extension that enhances the Westlaw experience with customizable typogr
 ### Extension Popup
 Click the extension icon (orange square with blue "W") in your toolbar while on any Westlaw page to access all controls:
 
+#### Master Controls
+- **Killswitch**: 🔴/🟢 Disable/Enable all modifications instantly
+- **Reload Extension**: 🔄 Reload the extension if needed
+
+#### Feature Toggles
+- **Font Size Controls**: Enable/disable font size adjustment buttons
+- **Line Height Controls**: Enable/disable line height adjustment buttons
+- **Margin Controls**: Enable/disable margin adjustment buttons
+- **Hide Sidebar**: Toggle visibility of Westlaw's right sidebar
+- **Focus Mode**: Hide header/footer elements for distraction-free reading
+- **Keep Session Alive**: Send periodic pings to prevent session timeout
+- **Citing References Focus**: Show only content column in citing references tables
+- **Search Navigation**: Enable/disable search term navigation buttons and shortcuts
+- **Document Navigation**: Enable/disable document navigation buttons and shortcuts
+- **Notes Feature**: Enable/disable notes saving and viewer functionality
+- **Opinion Colorizer (Borders)**: Add colored borders to different opinion sections
+- **Opinion Colorizer (Highlighting)**: Add background highlighting to opinion sections
+- **Star Page Highlighting**: Highlight starred content with enhanced visibility
+- **Inline Footnotes**: Move footnotes inline with the text for easier reading
+- **Link Opener**: Add link opening options to text selection menu
+
+#### Typography Controls
 - **Font Size**: Increase/Decrease/Reset (10-36px range)
 - **Line Height**: Increase/Decrease/Reset (1.0-3.0 range, 0.1 increments)
+
+#### Layout Controls
 - **Margins**: Increase/Decrease/Reset symmetrical margins
 - **Move Left/Right**: Shift content left or right independently
-- **Toggle Sidebar**: Hide/show right sidebar
-- **Toggle Focus Mode**: Hide header/footer elements
-- **Copy & Notes**: Copy document with reference and download notes file
-- **Navigation**: Next/Previous search terms, scroll to top
+
+#### Navigation Controls
+- **Search Term Navigation**: Next/Previous search terms, scroll to top
+- **Document Navigation**: Navigate between previous/next documents
+- **Copy & Notes**: Save quotations and view notes
 
 ### Smart Page Detection
 - **On Westlaw Pages**: Shows all controls and functionality
@@ -46,39 +71,66 @@ Navigation shortcuts work when not typing in input fields:
 |-----|--------|
 | `N` or `→` | Next search term |
 | `←` | Previous search term |
-| `↑` | Scroll to top |
+| `↑` | Scroll to top / Previous document |
+| `Shift + ←` | Previous document |
+| `Shift + →` | Next document |
 | `Enter` | Copy document & download notes |
+| `O` | Open selected links in new tabs (requires Link Opener enabled) |
 
 ## Features
 
-### Typography Controls
-- **Font Size**: Adjust document font size with proper scaling for headings and footnotes
-- **Line Height**: Fine-tune line spacing for optimal readability
+### Master Controls
+- **Killswitch**: Instantly disable/enable all modifications with visual feedback
+- **Extension Reload**: Quick extension restart if needed
 
-### Layout Controls
-- **Margins**: Symmetrical margin adjustment for comfortable reading width
+### Typography Enhancement
+- **Font Size Control**: Adjust document font size (10-36px) with proper scaling for headings and footnotes
+- **Line Height Control**: Fine-tune line spacing (1.0-3.0) for optimal readability
+- **Dynamic Application**: Settings apply to all content including dynamically loaded elements
+
+### Layout & Reading Experience
+- **Margin Control**: Symmetrical margin adjustment for comfortable reading width
 - **Content Positioning**: Move content left or right independently
-- **Sidebar Toggle**: Hide distracting sidebar elements
-- **Focus Mode**: Remove header/footer clutter while keeping navigation
+- **Sidebar Management**: Hide/show Westlaw's right sidebar
+- **Focus Mode**: Remove header/footer clutter while preserving navigation
+- **Star Page Enhancement**: Enhanced highlighting for starred content with better contrast
 
-### Copy & Notes Integration
-- **Smart Copy**: Automatically finds and clicks Westlaw's copy button
-- **Notes File**: Downloads structured notes file with sections for research, citations, and key points
-- **File Naming**: Auto-names files with current date (westlaw-notes-YYYY-MM-DD.txt)
+### Opinion & Document Organization
+- **Opinion Colorizer**: Visual organization of court opinions with distinct colors:
+  - Blue borders/highlighting for majority opinions
+  - Green for concurring opinions
+  - Orange for concurring-and-dissenting opinions
+  - Red for dissenting opinions
+  - Grey for attorney blocks
+- **Citing References Focus**: Streamline citing references tables to show only content
+- **Inline Footnotes**: Move footnotes inline with text for easier reading
 
-### Smart Persistence
-- All settings are saved per domain
-- Settings automatically restored when returning to Westlaw
-- Real-time status display in popup
+### Navigation & Productivity
+- **Search Term Navigation**: Jump between highlighted search terms with keyboard shortcuts
+- **Document Navigation**: Navigate between previous/next documents in search results
+- **Link Opener**: Select text and open all contained links in new tabs with 'O' key or selection menu
+- **Keep Session Alive**: Prevent session timeout with periodic background pings (5-minute intervals)
+
+### Notes & Research Management
+- **Smart Copy**: Automatically finds and clicks Westlaw's copy button with reference
+- **Enhanced Selection Menu**: Additional options in text selection popup:
+  - "Copy cite to notes" for quick quotation saving
+  - "Open links in new tabs" (when Link Opener enabled)
+- **Notes Viewer**: Dedicated interface for managing saved quotations
+- **File Integration**: Downloads structured notes with research sections
+
+### Smart Persistence & Reliability
+- **Domain-Specific Settings**: All preferences saved per domain (westlaw.com vs other sites)
+- **Master Tab Coordination**: Features like Keep Alive use single "master" tab to avoid conflicts
+- **Real-Time Status**: Live status display in popup showing current settings
+- **Feature Toggle System**: Granular control over which features are active
 
 ### User Experience
-- **Visual Icon**: Orange background with blue "W" for easy identification
-- **Page Detection**: Shows helpful message when not on Westlaw pages
-- **Clean Interface**: Organized popup with clear section divisions
-
-### Dynamic Content Support
-- Automatically applies settings to dynamically loaded content
-- Works with all Westlaw document types and interfaces
+- **Modern Toggle Interface**: Clean switch-based controls for all features
+- **Visual Feedback**: Color-coded notifications for different feature types
+- **Page Detection**: Automatic detection of Westlaw pages vs other sites
+- **Keyboard-Friendly**: Comprehensive keyboard shortcuts that don't interfere with typing
+- **Dynamic Content Support**: Works with all Westlaw document types and dynamically loaded content
 
 ## Advantages Over Userscript
 
@@ -104,17 +156,22 @@ The extension consists of:
 
 ## Version
 
-Current version: **1.4**
+Current version: **1.6.6**
 
 ### Recent Updates
+- **v1.6.6**: Add Link Opener feature, improve opinion colorization with distinct orange for concurring/dissenting sections, add "Copy cite to notes" to selection menu, fix keyboard shortcut 'O', improve toggle switch UI feedback
+- **v1.6.5**: Consolidate popup interface and fix footnote ordering
+- **v1.6.4**: Improve popup layout and fix toggle communication
+- **v1.6.3**: Add privacy policy for Chrome Web Store submission
+- **v1.6.2**: Fix killswitch functionality and improve footnote reorganization
+- **v1.6.1**: Add inline footnote reorganization feature
+- **v1.6.0**: Major UI overhaul with feature toggles, killswitch, and enhanced controls
+- **v1.5**: Add star page highlighting, Westlaw Edge compatibility, font sizing for star pages
 - **v1.4**: Enhanced notes system, content highlighting, and UI improvements
-- **v1.3.1**: Refined icon design - Comic Sans font, optimized size, positioned at y=85%
-- **v1.3**: Made W larger and positioned at bottom - increased font sizes significantly and moved to y=90%
-- **v1.2.2**: Further adjusted W positioning - moved to y=70% for optimal centering in PNG output
-- **v1.2.1**: Fixed W positioning in PNG icons - moved from y=50% to y=60% for better centering
-- **v1.2**: Made icon "W" taller and more prominent with increased font sizes
-- **v1.1**: Improved copy/paste reliability with better timing, fallback mechanisms, and enhanced user feedback
-- **v1.0**: Initial release with full typography controls, layout adjustments, and copy/notes functionality
+- **v1.3**: Refined icon design and improved visual presentation
+- **v1.2**: Enhanced icon design with better positioning and sizing
+- **v1.1**: Improved copy/paste reliability with better timing and fallback mechanisms
+- **v1.0**: Initial release with typography controls, layout adjustments, and copy/notes functionality
 
 ## Support
 
