@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Print Margins 1 Inch",
+  "version": "1.0",
+  "description": "Sets print margins to 1 inch on all pages",
+  "permissions": [],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["print-margins.css"],
+      "run_at": "document_start"
+    }
+  ]
+}
