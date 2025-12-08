@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/markbennett/github/chrome-extensions pull origin main)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
