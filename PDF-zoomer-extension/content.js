@@ -5,7 +5,7 @@
   'use strict';
 
   const STORAGE_KEY = 'pdfZoomLevel';
-  const DEFAULT_ZOOM = 100;
+  const DEFAULT_ZOOM = 149;
 
   // Check if this is a PDF page
   function isPDFPage() {
@@ -28,12 +28,6 @@
     }
 
     return false;
-  }
-
-  // Get the PDF viewer element
-  function getPDFViewer() {
-    // Try to find the PDF embed element
-    return document.querySelector('embed[type="application/pdf"]');
   }
 
   // Apply zoom by modifying the URL hash
@@ -59,6 +53,7 @@
 
     // Only update if zoom is different
     if (window.location.href !== url.href) {
+      console.log('PDF Zoom Memory: Navigating to apply zoom:', zoomLevel);
       window.location.replace(url.href);
     }
   }
@@ -86,12 +81,20 @@
       const savedZoom = result[STORAGE_KEY];
       const currentZoom = getZoomFromURL();
 
+      console.log('PDF Zoom Memory: Saved zoom:', savedZoom, 'Current URL zoom:', currentZoom);
+
       if (savedZoom && savedZoom !== currentZoom) {
         console.log('PDF Zoom Memory: Applying saved zoom level:', savedZoom);
         applyZoom(savedZoom);
       } else if (!savedZoom && !currentZoom) {
-        // No saved zoom and no current zoom - use default
-        console.log('PDF Zoom Memory: No saved zoom, using default');
+        // No saved zoom and no current zoom - apply and save default
+        console.log('PDF Zoom Memory: No saved zoom, applying default:', DEFAULT_ZOOM);
+        saveZoom(DEFAULT_ZOOM);
+        applyZoom(DEFAULT_ZOOM);
+      } else if (!savedZoom && currentZoom) {
+        // URL has zoom but nothing saved - save the current
+        console.log('PDF Zoom Memory: Saving current URL zoom:', currentZoom);
+        saveZoom(currentZoom);
       }
     });
   }
@@ -100,31 +103,25 @@
   function monitorZoomChanges() {
     let lastZoom = getZoomFromURL();
 
-    // Check periodically for zoom changes (user manually zooming)
-    setInterval(() => {
-      const currentZoom = getZoomFromURL();
-      if (currentZoom && currentZoom !== lastZoom) {
-        lastZoom = currentZoom;
-        saveZoom(currentZoom);
-      }
-    }, 1000);
-
-    // Also listen for hash changes
+    // Listen for hash changes (this catches some zoom changes)
     window.addEventListener('hashchange', () => {
       const currentZoom = getZoomFromURL();
+      console.log('PDF Zoom Memory: Hash changed, zoom:', currentZoom);
       if (currentZoom && currentZoom !== lastZoom) {
         lastZoom = currentZoom;
         saveZoom(currentZoom);
       }
     });
-  }
 
-  // Alternative method: inject zoom via keyboard simulation
-  // This works when hash-based zoom doesn't
-  function setupKeyboardZoom(zoomLevel) {
-    // Calculate zoom steps needed (each Ctrl+Plus/Minus is ~10-25%)
-    // This is a fallback method
-    console.log('PDF Zoom Memory: Keyboard zoom method available for level:', zoomLevel);
+    // Check periodically for zoom changes
+    setInterval(() => {
+      const currentZoom = getZoomFromURL();
+      if (currentZoom && currentZoom !== lastZoom) {
+        console.log('PDF Zoom Memory: Detected zoom change:', currentZoom);
+        lastZoom = currentZoom;
+        saveZoom(currentZoom);
+      }
+    }, 1000);
   }
 
   // Main initialization
@@ -150,7 +147,8 @@
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'applyZoom' && request.zoom) {
-      console.log('PDF Zoom Memory: Received zoom request:', request.zoom);
+      console.log('PDF Zoom Memory: Received zoom request from popup:', request.zoom);
+      saveZoom(request.zoom);
       if (isPDFPage()) {
         applyZoom(request.zoom);
         sendResponse({ success: true });

@@ -5,7 +5,7 @@ const STORAGE_KEY = 'pdfZoomLevel';
 // Load current zoom level
 function loadCurrentZoom() {
   chrome.storage.local.get([STORAGE_KEY], (result) => {
-    const savedZoom = result[STORAGE_KEY] || 100;
+    const savedZoom = result[STORAGE_KEY] || 149;
     document.getElementById('currentZoom').textContent = savedZoom;
     document.getElementById('zoomLevel').value = savedZoom;
     updatePresetButtons(savedZoom);
