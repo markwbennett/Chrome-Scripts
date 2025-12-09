@@ -12,7 +12,8 @@
         "*://*/*.pdf",
         "*://*/*.PDF",
         "*://*/*?*pdf*",
-        "*://search.txcourts.gov/*"
+        "*://search.txcourts.gov/*",
+        "*://*.hcdistrictclerk.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle",
