@@ -3,7 +3,7 @@ const STYLE_ID = 'high-contrast-override';
 const HIGH_CONTRAST_CSS = `
   *, *::before, *::after {
     background-color: #ffffff !important;
-    color: #1a1a1a !important;
+    color: #000000 !important;
     border-color: #cccccc !important;
     text-shadow: none !important;
     box-shadow: none !important;
