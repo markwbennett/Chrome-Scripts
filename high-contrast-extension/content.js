@@ -19,7 +19,7 @@ const HIGH_CONTRAST_CSS = `
     background-color: transparent !important;
   }
   body {
-    font-size: 18px !important;
+    font-size: max(18px, 1em) !important;
     line-height: 1.6 !important;
   }
 `;
