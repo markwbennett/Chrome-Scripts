@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Minimum Body Margins",
+  "version": "1.0",
+  "description": "Enforces minimum 0.5-inch left and right margins on body text",
+  "permissions": [],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
