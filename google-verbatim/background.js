@@ -1,6 +1,7 @@
-// Intercepts Google search navigations and appends tbs=li:1 (verbatim)
-// if it is not already present. Handles existing tbs parameters by
-// appending ,li:1 rather than overwriting.
+// Intercepts Google search navigations and ensures:
+//   tbs=li:1   — verbatim (no synonyms, no spelling correction)
+//   pws=0      — no personalized results
+//   filter=0   — show omitted/similar results
 
 chrome.webNavigation.onBeforeNavigate.addListener(
   (details) => {
@@ -11,13 +12,30 @@ chrome.webNavigation.onBeforeNavigate.addListener(
     // Only process pages that have a query (ignore bare /search)
     if (!url.searchParams.has('q')) return;
 
+    let changed = false;
+
+    // tbs=li:1 — append to existing tbs if not already present
     const tbs = url.searchParams.get('tbs');
-    if (hasVerbatim(tbs)) return;
+    if (!hasVerbatim(tbs)) {
+      url.searchParams.set('tbs', tbs ? `${tbs},li:1` : 'li:1');
+      changed = true;
+    }
 
-    const newTbs = tbs ? `${tbs},li:1` : 'li:1';
-    url.searchParams.set('tbs', newTbs);
+    // pws=0 — disable personalization
+    if (url.searchParams.get('pws') !== '0') {
+      url.searchParams.set('pws', '0');
+      changed = true;
+    }
 
-    chrome.tabs.update(details.tabId, { url: url.toString() });
+    // filter=0 — disable duplicate filtering
+    if (url.searchParams.get('filter') !== '0') {
+      url.searchParams.set('filter', '0');
+      changed = true;
+    }
+
+    if (changed) {
+      chrome.tabs.update(details.tabId, { url: url.toString() });
+    }
   },
   {
     url: [{
