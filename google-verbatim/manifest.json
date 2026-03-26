@@ -3,7 +3,7 @@
   "name": "Google Verbatim Search",
   "version": "1.0",
   "description": "Enforces verbatim results, no personalization, and no duplicate filtering on Google searches",
-  "permissions": ["webNavigation", "tabs"],
+  "permissions": ["webNavigation"],
   "host_permissions": ["https://www.google.com/*"],
   "background": {
     "service_worker": "background.js"
