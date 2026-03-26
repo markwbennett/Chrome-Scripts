@@ -1,0 +1,29 @@
+Google Verbatim Search automatically enforces three settings on every Google search — no configuration required.
+
+WHAT IT DOES
+
+1. Verbatim Mode (tbs=li:1)
+Google silently replaces your search terms with synonyms, corrects your spelling, and broadens your query. Verbatim mode stops all of that. You get results for exactly what you typed.
+
+2. No Personalization (pws=0)
+Google filters your results based on your search history, location, and browsing profile. This extension disables personalization so you see the same results everyone else sees.
+
+3. No Duplicate Filtering (filter=0)
+Google hides results it considers "too similar" to others. This extension shows them all, so you never miss a relevant page.
+
+HOW IT WORKS
+
+The extension runs as a lightweight background service worker. When you navigate to a Google search page, it adds three URL parameters before the page loads. That's it. No popup, no sidebar, no toolbar button — it just works.
+
+PRIVACY
+
+- Collects zero data
+- Makes zero network requests
+- No analytics, no tracking, no telemetry
+- Fully open source: https://github.com/markwbennett/Chrome-Scripts
+
+PERMISSIONS EXPLAINED
+
+- webNavigation: Detects Google search page navigations
+- tabs: Updates the tab URL with verbatim parameters
+- Host permission (www.google.com): Limits activity to Google search pages only
