@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Google Verbatim Search",
   "version": "1.0",
-  "description": "Automatically adds tbs=li:1 (verbatim) to Google searches",
+  "description": "Enforces verbatim results, no personalization, and no duplicate filtering on Google searches",
   "permissions": ["webNavigation", "tabs"],
   "host_permissions": ["https://www.google.com/*"],
   "background": {
