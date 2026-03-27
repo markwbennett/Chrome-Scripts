@@ -33,6 +33,12 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       changed = true;
     }
 
+    // safe=off — disable SafeSearch
+    if (url.searchParams.get('safe') !== 'off') {
+      url.searchParams.set('safe', 'off');
+      changed = true;
+    }
+
     if (changed) {
       chrome.tabs.update(details.tabId, { url: url.toString() });
     }
