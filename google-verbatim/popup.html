@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      width: 240px;
+      padding: 12px 16px;
+      margin: 0;
+      background: #fff;
+      color: #202124;
+    }
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 12px;
+      color: #1a73e8;
+    }
+    .setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    .setting:last-child {
+      border-bottom: none;
+    }
+    .label {
+      font-size: 13px;
+    }
+    .desc {
+      font-size: 11px;
+      color: #5f6368;
+      margin-top: 2px;
+    }
+    /* Toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #bdc1c6;
+      border-radius: 20px;
+      transition: .2s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .2s;
+    }
+    input:checked + .slider {
+      background: #1a73e8;
+    }
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+  </style>
+</head>
+<body>
+  <h2>Google Verbatim Search</h2>
+
+  <div class="setting">
+    <div>
+      <div class="label">Verbatim</div>
+      <div class="desc">No synonyms or spelling correction</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="verbatim">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <div>
+      <div class="label">No Personalization</div>
+      <div class="desc">Disable personalized results</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="nopws">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <div>
+      <div class="label">All Results</div>
+      <div class="desc">Show omitted/duplicate results</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="nofilter">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <div>
+      <div class="label">SafeSearch Off</div>
+      <div class="desc">Disable SafeSearch filtering</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="nosafe">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
