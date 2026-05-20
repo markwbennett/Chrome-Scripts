@@ -11,7 +11,7 @@
     enabled: false,
     panelVisible: true,
     panelCollapsed: true,
-    fontSizePx: 18,
+    textScale: 100,
     bgShift: 0,
     fgShift: 0,
     linkShift: 0,
@@ -90,10 +90,13 @@
     const bg = parseRgba(cs.backgroundColor);
     const fwRaw = parseInt(cs.fontWeight, 10);
     const fw = Number.isFinite(fwRaw) ? fwRaw : 400;
+    const fsRaw = parseFloat(cs.fontSize);
+    const fs = Number.isFinite(fsRaw) && fsRaw > 0 ? fsRaw : 16;
     colorCache.set(el, {
       c: c ? [c[0], c[1], c[2]] : null,
       bg: bg && bg[3] > 0 ? bg : null,
       fw,
+      fs,
       isLink: el.tagName === 'A',
     });
   }
@@ -105,6 +108,7 @@
         el.style.removeProperty('color');
         el.style.removeProperty('background-color');
         el.style.removeProperty('font-weight');
+        el.style.removeProperty('font-size');
       } catch (e) {}
     }
     colorCache.clear();
@@ -140,6 +144,12 @@
     } else {
       el.style.removeProperty('font-weight');
     }
+    if (state.textScale !== 100) {
+      const px = orig.fs * (state.textScale / 100);
+      el.style.setProperty('font-size', `${px.toFixed(2)}px`, 'important');
+    } else {
+      el.style.removeProperty('font-size');
+    }
   }
 
   function applyShifts() {
@@ -165,6 +175,7 @@
         el.style.removeProperty('color');
         el.style.removeProperty('background-color');
         el.style.removeProperty('font-weight');
+        el.style.removeProperty('font-size');
       } catch (e) {}
     }
   }
@@ -172,7 +183,6 @@
   function buildFontCss() {
     return `
       html, body {
-        font-size: ${state.fontSizePx}px !important;
         line-height: 1.55 !important;
       }
     `;
@@ -404,7 +414,7 @@
           </div>
           <div class="row">
             <div class="row-label"><span>Text size</span><span class="value" id="v-font"></span></div>
-            <input type="range" id="font" min="12" max="40" step="1">
+            <input type="range" id="font" min="50" max="300" step="5">
           </div>
           <div class="row">
             <div class="row-label"><span>Font weight</span><span class="value" id="v-fw"></span></div>
@@ -447,8 +457,8 @@
     const $ = (sel) => panelShadow.querySelector(sel);
     $('#host').textContent = HOST;
     $('#enabled').checked = !!state.enabled;
-    $('#font').value = state.fontSizePx;
-    $('#v-font').textContent = `${state.fontSizePx}px`;
+    $('#font').value = state.textScale;
+    $('#v-font').textContent = `${state.textScale}%`;
     $('#fw').value = state.fontWeightShift;
     $('#v-fw').textContent = fmtShift(state.fontWeightShift);
     $('#bg').value = state.bgShift;
@@ -485,8 +495,6 @@
           state.enabled = true;
           $('#enabled').checked = true;
           applyAll();
-        } else if (key === 'fontSizePx') {
-          applyFontStyle();
         } else {
           scheduleApply();
         }
@@ -494,7 +502,7 @@
         saveStateSoon();
       });
     };
-    onSlide('font', 'fontSizePx');
+    onSlide('font', 'textScale');
     onSlide('fw', 'fontWeightShift');
     onSlide('bg', 'bgShift');
     onSlide('fg', 'fgShift');
