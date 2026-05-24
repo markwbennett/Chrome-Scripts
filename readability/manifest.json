@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Readability",
-  "version": "1.0",
-  "description": "Per-domain readability controls: text size, background lightness, foreground darkness, in a floating panel.",
+  "version": "1.1",
+  "description": "Per-domain readability controls: text size, background lightness, foreground darkness, and minimum body margins, in a floating panel.",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["<all_urls>"],
   "action": {

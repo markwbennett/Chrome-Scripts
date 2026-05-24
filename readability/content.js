@@ -16,6 +16,7 @@
     fgShift: 0,
     linkShift: 0,
     fontWeightShift: 0,
+    minBodyMargin: 48,
   };
 
   let state = { ...DEFAULTS };
@@ -23,6 +24,8 @@
   let panelShadow = null;
   let saveTimer = null;
   let applyScheduled = false;
+  let marginAppliedLeft = false;
+  let marginAppliedRight = false;
 
   // Map<Element, { c: [r,g,b]|null, bg: [r,g,b,a]|null, isLink: bool }>
   const colorCache = new Map();
@@ -188,6 +191,37 @@
     `;
   }
 
+  function applyMinBodyMargins() {
+    const body = document.body;
+    if (!body) return;
+    if (marginAppliedLeft) {
+      body.style.removeProperty('margin-left');
+      body.style.removeProperty('padding-left');
+      marginAppliedLeft = false;
+    }
+    if (marginAppliedRight) {
+      body.style.removeProperty('margin-right');
+      body.style.removeProperty('padding-right');
+      marginAppliedRight = false;
+    }
+    const min = state.minBodyMargin;
+    if (!min || min <= 0) return;
+    let cs;
+    try { cs = getComputedStyle(body); } catch (e) { return; }
+    const ml = parseFloat(cs.marginLeft) + parseFloat(cs.paddingLeft);
+    const mr = parseFloat(cs.marginRight) + parseFloat(cs.paddingRight);
+    if (ml < min) {
+      body.style.marginLeft = `${min}px`;
+      body.style.paddingLeft = '0px';
+      marginAppliedLeft = true;
+    }
+    if (mr < min) {
+      body.style.marginRight = `${min}px`;
+      body.style.paddingRight = '0px';
+      marginAppliedRight = true;
+    }
+  }
+
   function applyFontStyle() {
     let style = document.getElementById(STYLE_ID);
     if (!state.enabled) {
@@ -249,6 +283,7 @@
   }
 
   function applyAll() {
+    applyMinBodyMargins();
     if (state.enabled) {
       if (colorCache.size === 0) {
         enableEffect();
@@ -433,6 +468,10 @@
             <input type="range" id="link" min="-100" max="100" step="1">
           </div>
           <div class="hint">−100 → black · 0 = native · +100 → white</div>
+          <div class="row" style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08);">
+            <div class="row-label"><span>Min body margin</span><span class="value" id="v-margin"></span></div>
+            <input type="range" id="margin" min="0" max="96" step="4">
+          </div>
           <div class="footer">
             <button class="text" id="reset">Reset this site</button>
             <button class="text" id="recapture" title="Re-read native colors">Recapture</button>
@@ -467,6 +506,8 @@
     $('#v-fg').textContent = fmtShift(state.fgShift);
     $('#link').value = state.linkShift;
     $('#v-link').textContent = fmtShift(state.linkShift);
+    $('#margin').value = state.minBodyMargin;
+    $('#v-margin').textContent = `${state.minBodyMargin}px`;
     const body = $('#body');
     const panel = $('#panel');
     if (state.panelCollapsed) {
@@ -507,6 +548,13 @@
     onSlide('bg', 'bgShift');
     onSlide('fg', 'fgShift');
     onSlide('link', 'linkShift');
+
+    $('#margin').addEventListener('input', (e) => {
+      state.minBodyMargin = Number(e.target.value);
+      applyMinBodyMargins();
+      refreshPanel();
+      saveStateSoon();
+    });
 
     $('#collapse').addEventListener('click', () => {
       state.panelCollapsed = !state.panelCollapsed;
@@ -603,6 +651,7 @@
       document.addEventListener('DOMContentLoaded', init, { once: true });
       return;
     }
+    applyMinBodyMargins();
     if (state.enabled) enableEffect();
     if (state.panelVisible) ensurePanel();
   }
