@@ -31,22 +31,37 @@
   const colorCache = new Map();
   let observer = null;
 
+  function isContextValid() {
+    return !!(chrome && chrome.runtime && chrome.runtime.id);
+  }
+
   function loadState() {
     return new Promise((resolve) => {
-      chrome.storage.local.get(STORAGE_KEY, (result) => {
-        const stored = result[STORAGE_KEY];
-        if (stored && typeof stored === 'object') {
-          state = { ...DEFAULTS, ...stored };
-        }
+      if (!isContextValid()) { resolve(); return; }
+      try {
+        chrome.storage.local.get(STORAGE_KEY, (result) => {
+          if (chrome.runtime.lastError) { resolve(); return; }
+          const stored = result[STORAGE_KEY];
+          if (stored && typeof stored === 'object') {
+            state = { ...DEFAULTS, ...stored };
+          }
+          resolve();
+        });
+      } catch (e) {
         resolve();
-      });
+      }
     });
   }
 
   function saveStateSoon() {
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
-      chrome.storage.local.set({ [STORAGE_KEY]: state });
+      if (!isContextValid()) return;
+      try {
+        chrome.storage.local.set({ [STORAGE_KEY]: state });
+      } catch (e) {
+        // Extension context invalidated (e.g. after reload); ignore.
+      }
     }, 120);
   }
 
