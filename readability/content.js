@@ -219,6 +219,7 @@
       body.style.removeProperty('padding-right');
       marginAppliedRight = false;
     }
+    if (!state.enabled) return;
     const min = state.minBodyMargin;
     if (!min || min <= 0) return;
     let cs;
@@ -566,7 +567,13 @@
 
     $('#margin').addEventListener('input', (e) => {
       state.minBodyMargin = Number(e.target.value);
-      applyMinBodyMargins();
+      if (!state.enabled) {
+        state.enabled = true;
+        $('#enabled').checked = true;
+        applyAll();
+      } else {
+        applyMinBodyMargins();
+      }
       refreshPanel();
       saveStateSoon();
     });
