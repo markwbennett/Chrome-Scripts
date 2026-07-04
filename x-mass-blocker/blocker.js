@@ -60,7 +60,7 @@
     const menuItems = document.querySelectorAll('[role="menuitem"]');
     for (const item of menuItems) {
       const text = item.textContent || '';
-      if (text.includes('Block @') || text.includes('Block @')) {
+      if (text.includes('Block @') || text.trim().startsWith('Block')) {
         return item;
       }
     }
