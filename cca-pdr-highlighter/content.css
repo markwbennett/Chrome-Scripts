@@ -1,0 +1,71 @@
+/* CCA PDR Highlighter — row paints + floating legend */
+
+tr[data-cca-pdr-stage] {
+  transition: background-color 0.15s ease;
+}
+
+.cca-pdr-chip {
+  display: inline-block;
+  margin-left: 0.35em;
+  padding: 0.05em 0.4em;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #111;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+#cca-pdr-highlighter-legend {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2147483646;
+  max-width: 280px;
+  padding: 10px 12px;
+  font: 12px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #111;
+  background: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+#cca-pdr-highlighter-legend .cca-pdr-legend-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+#cca-pdr-highlighter-legend .cca-pdr-asof {
+  font-weight: 400;
+  color: #111;
+  font-size: 11px;
+}
+
+#cca-pdr-highlighter-legend .cca-pdr-legend-items {
+  display: grid;
+  grid-template-columns: 14px 1fr 14px 1fr;
+  gap: 4px 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+#cca-pdr-highlighter-legend .cca-pdr-swatch {
+  width: 12px;
+  height: 12px;
+  border: 1px solid #333;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+#cca-pdr-highlighter-legend .cca-pdr-legend-source {
+  font-size: 10px;
+  color: #111;
+  border-top: 1px solid #ddd;
+  padding-top: 4px;
+}

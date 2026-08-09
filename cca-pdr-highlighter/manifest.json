@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "CCA PDR Highlighter",
+  "version": "1.0.0",
+  "description": "Highlights Texas CCA case-search rows by PDR stage (granted / refused / submitted / decided) using the IACLS CCA database.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://search.txcourts.gov/*",
+    "https://iacls.org/*",
+    "https://www.iacls.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://search.txcourts.gov/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "CCA PDR Highlighter",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

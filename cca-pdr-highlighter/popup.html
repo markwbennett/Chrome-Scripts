@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CCA PDR Highlighter</title>
+    <style>
+      body {
+        font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #000;
+        background: #fff;
+        margin: 0;
+        padding: 12px 14px;
+        min-width: 280px;
+      }
+      h1 {
+        font-size: 14px;
+        margin: 0 0 8px;
+      }
+      .row {
+        margin: 4px 0;
+      }
+      .label {
+        font-weight: 600;
+      }
+      button {
+        margin-top: 10px;
+        padding: 6px 10px;
+        font: inherit;
+        cursor: pointer;
+      }
+      .swatch {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 1px solid #333;
+        vertical-align: -1px;
+        margin-right: 4px;
+      }
+      .err {
+        color: #000;
+        margin-top: 8px;
+        white-space: pre-wrap;
+      }
+      .ok {
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CCA PDR Highlighter</h1>
+    <div class="row"><span class="label">Status:</span> <span id="status">…</span></div>
+    <div class="row"><span class="label">As of:</span> <span id="asof">…</span></div>
+    <div class="row"><span class="label">Cases in map:</span> <span id="n">…</span></div>
+    <div class="row"><span class="label">Source:</span> <span id="url">…</span></div>
+    <div class="row" style="margin-top: 8px">
+      <span class="swatch" style="background: #f5e663"></span>Granted
+      <span class="swatch" style="background: #7dcea0; margin-left: 8px"></span>Submitted
+      <span class="swatch" style="background: #b0b0b0; margin-left: 8px"></span>Decided
+      <span class="swatch" style="background: #f1948a; margin-left: 8px"></span>Refused
+    </div>
+    <button id="refresh" type="button">Refresh status map</button>
+    <div id="msg" class="ok"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>
