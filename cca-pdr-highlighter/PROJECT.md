@@ -36,7 +36,7 @@ COA stages come from TAMES docket events: dismissed (appeal/petition dismissed),
 
 ## Now
 
-v1.1.0 is on disk and the Bennett COA map is live at `https://iacls.org/coa/status_map.json` (217 cases as of 2026-08-18: 149 decided, 35 dismissed, 17 stored, 13 pending, 3 submitted). Immediate next: reload the unpacked extension in Chrome/Vivaldi so the new content and background scripts load, then confirm a bar-number search paints both `PD-*` and COA rows. First incremental iacls cron is 2026-08-19 10:00 America/Chicago (`daily_update.py`).
+v1.1.0 is live. Bennett COA map is at `https://iacls.org/coa/status_map.json` (217 cases as of 2026-08-18: 149 decided, 35 dismissed, 17 stored, 13 pending, 3 submitted). Morning refresh is the weekday 5 AM briefing on mini (`scripts/update_coa_highlighter.sh` → iacls `daily_update.py`); the 10:00 iacls cron was removed 2026-08-18. Immediate next: reload the unpacked extension and confirm a bar-number search paints both maps; then check the 2026-08-19 05:00 briefing log and `iacls:/home/ubuntu/github/coa/daily_update.log`.
 
 ## Known
 
@@ -45,4 +45,4 @@ v1.1.0 is on disk and the Bennett COA map is live at `https://iacls.org/coa/stat
 - Extension caches both maps for 6 hours in `chrome.storage.local`; popup can force refresh.
 - Timeline page remains cohort-scoped; CCA status map covers all `PD-*` cases in `cca.db`.
 - `server/coa/tames.py` loads the tx-coa MCP `server.py` (with an MCP stub) so the builder reuses the same TAMES parser.
-- COA map lives at `iacls:/home/ubuntu/github/coa` (`coa.db` + `output/status_map.json`); `/var/www/iacls.org/html/coa` is a symlink to that `output/` directory (same pattern as `cca`). Cron `0 10 * * *` runs `daily_update.py` (incremental fetch of non-terminal cases). Stored and transferred-origin dockets use stage `stored` and stay uncolored.
+- COA map lives at `iacls:/home/ubuntu/github/coa` (`coa.db` + `output/status_map.json`); `/var/www/iacls.org/html/coa` is a symlink to that `output/` directory (same pattern as `cca`). Weekday 5 AM briefing on mini runs the incremental update; the 10:00 iacls cron was removed 2026-08-18. Stored and transferred-origin dockets use stage `stored` and stay uncolored.
