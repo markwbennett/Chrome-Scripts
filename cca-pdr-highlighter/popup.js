@@ -17,10 +17,14 @@ function loadInfo(force) {
       return;
     }
     const d = resp.data || {};
+    const coa = resp.coa_data || {};
     setText("status", resp.stale ? "OK (stale cache)" : resp.fromCache ? "OK (cache)" : "OK (fresh)");
     setText("asof", d.as_of || d.generated_at || "—");
     setText("n", d.n_cases != null ? d.n_cases.toLocaleString() : "—");
     setText("url", resp.url || "—");
+    setText("coa-asof", coa.as_of || coa.generated_at || "—");
+    setText("coa-n", coa.n_cases != null ? coa.n_cases.toLocaleString() : "—");
+    setText("coa-url", resp.coa_url || "—");
     setText("msg", resp.error ? String(resp.error) : "");
   });
 }
